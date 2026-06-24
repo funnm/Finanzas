@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanzas | Elzuco</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="src/styles/main.css">
+</head>
+<body>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <section id="auth-container" class="auth-shell" aria-label="Acceso">
+        <div class="auth-card">
+            <div class="auth-mark" aria-hidden="true">
+                <i class="fas fa-lock"></i>
+            </div>
+            <div class="auth-header">
+                <h1>Finanzas</h1>
+                <h2 id="auth-title">Iniciar sesion</h2>
+                <p id="auth-subtitle">Accede a tu tablero financiero privado.</p>
+            </div>
+
+            <form id="auth-form" class="auth-form">
+                <div class="field-group">
+                    <label for="email">Correo</label>
+                    <div class="input-shell">
+                        <i class="fas fa-envelope" aria-hidden="true"></i>
+                        <input class="input-field" type="email" id="email" placeholder="correo@ejemplo.com" autocomplete="email" required>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="password">Contrasena</label>
+                    <div class="input-shell">
+                        <i class="fas fa-key" aria-hidden="true"></i>
+                        <input class="input-field" type="password" id="password" placeholder="Minimo 6 caracteres" autocomplete="current-password" required>
+                    </div>
+                </div>
+
+                <button type="submit" id="auth-submit" class="primary-button">Entrar</button>
+            </form>
+
+            <p id="auth-toggle-container" class="auth-switch">
+                <span id="auth-toggle-text">No tienes cuenta?</span>
+                <a href="#" id="toggle-link" class="text-link">Registrarse</a>
+            </p>
+        </div>
+    </section>
+
+    <div id="app-container" class="app-shell hidden">
+        <header class="topbar">
+            <div class="topbar-inner">
+                <div class="brand">
+                    <div class="brand-mark" aria-hidden="true">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div>
+                        <h1 class="brand-title">Finanzas</h1>
+                        <p id="user-display" class="user-line"></p>
+                    </div>
+                </div>
+
+                <div class="topbar-actions">
+                    <span id="sync-status" class="status-pill">
+                        <i class="fas fa-circle" aria-hidden="true"></i>
+                        Sin sesion
+                    </span>
+                    <button id="theme-toggle" class="icon-button" type="button" title="Cambiar tema" aria-label="Cambiar tema">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button id="logout-btn" class="icon-button" type="button" title="Cerrar sesion" aria-label="Cerrar sesion">
+                        <i class="fas fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="app-main">
+            <section class="page-heading">
+                <div>
+                    <h2>Control financiero</h2>
+                    <p>Registra ingresos y gastos, revisa tu balance y encuentra rapidamente los movimientos importantes.</p>
+                </div>
+            </section>
+
+            <section class="summary-grid" aria-label="Resumen financiero">
+                <article class="metric-card">
+                    <p class="metric-label">
+                        Ingresos
+                        <i class="fas fa-arrow-trend-up" aria-hidden="true"></i>
+                    </p>
+                    <p id="total-income" class="metric-value">$0.00</p>
+                </article>
+
+                <article class="metric-card">
+                    <p class="metric-label">
+                        Gastos
+                        <i class="fas fa-arrow-trend-down" aria-hidden="true"></i>
+                    </p>
+                    <p id="total-expense" class="metric-value">$0.00</p>
+                </article>
+
+                <article class="metric-card is-balance">
+                    <p class="metric-label">
+                        Balance
+                        <i class="fas fa-scale-balanced" aria-hidden="true"></i>
+                    </p>
+                    <p id="total-balance" class="metric-value">$0.00</p>
+                </article>
+            </section>
+
+            <section class="workspace-grid">
+                <aside class="left-rail">
+                    <section class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">
+                                <i class="fas fa-plus" aria-hidden="true"></i>
+                                Nuevo movimiento
+                            </h3>
+                            <button type="button" id="btn-manage-categories" class="secondary-button is-compact">
+                                Categorias
+                            </button>
+                        </div>
+
+                        <form id="transaction-form" class="panel-body form-grid">
+                            <div class="two-columns">
+                                <div class="field-group">
+                                    <label for="type">Tipo</label>
+                                    <select id="type" class="input-field-sm select-field" required>
+                                        <option value="income">Ingreso</option>
+                                        <option value="expense" selected>Gasto</option>
+                                    </select>
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="category">Categoria</label>
+                                    <select id="category" class="input-field-sm select-field" required></select>
+                                </div>
+                            </div>
+
+                            <div class="field-group">
+                                <label for="amount">Monto</label>
+                                <div class="money-field">
+                                    <span class="money-prefix">$</span>
+                                    <input type="number" id="amount" step="0.01" min="0" class="input-field-sm" placeholder="0.00" required>
+                                </div>
+                            </div>
+
+                            <div class="field-group">
+                                <label for="description">Descripcion</label>
+                                <input type="text" id="description" class="input-field-sm" placeholder="Ej. Pago de servicio" required>
+                            </div>
+
+                            <div class="field-group">
+                                <label for="date">Fecha</label>
+                                <input type="date" id="date" class="input-field-sm" required>
+                            </div>
+
+                            <button type="submit" class="primary-button">Guardar movimiento</button>
+                        </form>
+                    </section>
+
+                    <section class="panel session-panel">
+                        <div class="session-card">
+                            <div class="session-icon" aria-hidden="true">
+                                <i class="fas fa-shield-halved"></i>
+                            </div>
+                            <div class="session-copy">
+                                <h3>Cuenta protegida</h3>
+                                <p id="session-status">Tus datos se sincronizan con Firebase cuando inicias sesion.</p>
+                            </div>
+                        </div>
+                    </section>
+                </aside>
+
+                <section class="content-rail">
+                    <section class="panel table-panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">
+                                <i class="fas fa-list" aria-hidden="true"></i>
+                                Historial
+                            </h3>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table class="records-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Detalle</th>
+                                        <th>Monto</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-list"></tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section class="analytics-grid">
+                        <article class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">
+                                    <i class="fas fa-chart-column" aria-hidden="true"></i>
+                                    Categorias
+                                </h3>
+                                <input type="month" id="month-filter" class="month-input" aria-label="Filtrar por mes">
+                            </div>
+                            <div class="panel-body chart-box">
+                                <canvas id="category-chart" aria-label="Grafico de categorias"></canvas>
+                            </div>
+                        </article>
+
+                        <article class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">
+                                    <i class="fas fa-calendar-day" aria-hidden="true"></i>
+                                    Balance diario
+                                </h3>
+                            </div>
+                            <div id="daily-summary" class="panel-body daily-list"></div>
+                        </article>
+                    </section>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <div id="modal-edit" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+        <div class="modal-card">
+            <div class="panel-header">
+                <h3 id="edit-modal-title" class="panel-title">Editar movimiento</h3>
+                <button type="button" class="icon-button close-modal" title="Cerrar" aria-label="Cerrar">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="edit-form" class="panel-body form-grid">
+                <input type="hidden" id="edit-id">
+                <div class="two-columns">
+                    <div class="field-group">
+                        <label for="edit-type">Tipo</label>
+                        <select id="edit-type" class="input-field-sm select-field">
+                            <option value="income">Ingreso</option>
+                            <option value="expense">Gasto</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label for="edit-category">Categoria</label>
+                        <select id="edit-category" class="input-field-sm select-field"></select>
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label for="edit-amount">Monto</label>
+                    <input type="number" id="edit-amount" step="0.01" min="0" class="input-field-sm">
+                </div>
+                <div class="field-group">
+                    <label for="edit-description">Descripcion</label>
+                    <input type="text" id="edit-description" class="input-field-sm">
+                </div>
+                <div class="field-group">
+                    <label for="edit-date">Fecha</label>
+                    <input type="date" id="edit-date" class="input-field-sm">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="secondary-button close-modal">Cancelar</button>
+                    <button type="submit" class="primary-button">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-categories" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="categories-modal-title">
+        <div class="modal-card">
+            <div class="panel-header">
+                <h3 id="categories-modal-title" class="panel-title">Categorias</h3>
+                <button type="button" class="icon-button close-modal" title="Cerrar" aria-label="Cerrar">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="panel-body">
+                <form id="category-form" class="category-form">
+                    <input type="text" id="new-category-name" class="input-field-sm" placeholder="Nueva categoria" required>
+                    <button type="submit" class="primary-button" title="Crear categoria" aria-label="Crear categoria">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </form>
+                <div id="categories-list" class="categories-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="src/js/firebase-config.js"></script>
+    <script type="module" src="src/js/auth.js"></script>
+    <script type="module" src="src/js/app.js"></script>
+</body>
+</html>
